@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Install and build all missing GPG versions.
+
+exec bundle exec ruby install.rb
