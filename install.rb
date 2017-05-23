@@ -22,6 +22,7 @@ DEPENDENCY_PREFIXES = {}
 %w(libgpg-error libgcrypt libassuan ksba ntbtls npth).each do |depname|
   dep_src_dir = File.join(dep_dir, depname, 'src')
   dep_out_dir = File.join(dep_dir, depname, 'out')
+  dep_out_flag = File.join(dep_out_dir, '.success')
 
   unless File.directory? dep_src_dir
     dep_url = download_page.css('a[href]')
@@ -39,7 +40,8 @@ DEPENDENCY_PREFIXES = {}
     puts "dependency #{depname} is already present"
   end
 
-  unless File.directory? dep_out_dir
+  unless File.file? dep_out_flag
+    FileUtils.rm_rf dep_out_dir
     FileUtils.mkdir_p dep_out_dir
     puts "building dependency #{depname}"
 
@@ -53,6 +55,8 @@ DEPENDENCY_PREFIXES = {}
       run "sh ./configure --prefix=#{dep_out_dir} #{dep_args.join ' '}"
       run 'make'
       run 'make install'
+
+      File.write(dep_out_flag, '')
     end
   else
     puts "dependency #{depname} is already built"
@@ -82,8 +86,12 @@ GPG_VERSION_DIRS.each do |version, dirs|
     raise RuntimeError("unable to find extracted source for GPG version #{version}")
   end
 
-  unless File.directory? dirs[:out]
+  build_flag = File.join dirs[:out], '.success'
+  unless File.file? build_flag
     puts "building gpg version #{version}"
+
+    FileUtils.rm_rf dirs[:out]
+    FileUtils.mkdir_p dirs[:out]
 
     Dir.chdir File.join(dirs[:src], src_subdir) do
       dep_args = DEPENDENCY_PREFIXES.map do |depname, prefix|
@@ -93,6 +101,8 @@ GPG_VERSION_DIRS.each do |version, dirs|
       run "./configure --prefix=#{dirs[:out]} #{dep_args.join ' '}"
       run "make"
       run "make install"
+
+      File.write(build_flag, '')
     end
   else
     puts "gpg version #{version} has already been built"
