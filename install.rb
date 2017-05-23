@@ -45,7 +45,7 @@ DEPENDENCY_PREFIXES = {}
     FileUtils.mkdir_p dep_out_dir
     puts "building dependency #{depname}"
 
-    dep_src_subdir = Dir.entries(dep_src_dir).find { |subdir| subdir =~ /^#{depname}-/ }
+    dep_src_subdir = Dir.entries(dep_src_dir).find { |subdir| subdir =~ /^(?:lib)?#{depname}-/ }
 
     Dir.chdir File.join(dep_src_dir, dep_src_subdir) do
       dep_args = DEPENDENCY_PREFIXES.map do |depname, prefix|
