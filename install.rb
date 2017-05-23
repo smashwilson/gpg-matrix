@@ -65,10 +65,10 @@ DEPENDENCY_PREFIXES = {}
   DEPENDENCY_PREFIXES[depname] = dep_out_dir
 end
 
-GPG_VERSION_DIRS.each do |version, dirs|
-  unless File.directory? dirs[:src]
+GPG_VERSION_INFO.each do |version, info|
+  unless File.directory? info[:src]
     puts "downloading gpg source for version #{version}"
-    FileUtils.mkdir_p(dirs[:src])
+    FileUtils.mkdir_p(info[:src])
 
     download = RestClient::Request.execute(
       method: :get,
@@ -76,30 +76,38 @@ GPG_VERSION_DIRS.each do |version, dirs|
       raw_response: true
     )
 
-    run "tar xvfj #{download.file.path} -C #{dirs[:src]}"
+    run "tar xvfj #{download.file.path} -C #{info[:src]}"
+
+    if File.directory? info[:patch]
+      Dir["#{info[:patch]}/*.patch"].each do |patchfile|
+        Dir.chdir info[:src] do
+          run "patch -p1 -i #{patchfile}"
+        end
+      end
+    end
   else
     puts "gpg version #{version} already present"
   end
 
-  src_subdir = Dir.entries(dirs[:src]).find { |subdir| subdir =~ /gnupg-#{version}/ }
+  src_subdir = Dir.entries(info[:src]).find { |subdir| subdir =~ /gnupg-#{version}/ }
   unless src_subdir
     raise RuntimeError("unable to find extracted source for GPG version #{version}")
   end
 
-  build_flag = File.join dirs[:out], '.success'
+  build_flag = File.join info[:out], '.success'
   unless File.file? build_flag
     puts "building gpg version #{version}"
 
-    FileUtils.rm_rf dirs[:out]
-    FileUtils.mkdir_p dirs[:out]
+    FileUtils.rm_rf info[:out]
+    FileUtils.mkdir_p info[:out]
 
-    Dir.chdir File.join(dirs[:src], src_subdir) do
+    Dir.chdir File.join(info[:src], src_subdir) do
       dep_args = DEPENDENCY_PREFIXES.map do |depname, prefix|
         "--with-#{depname}-prefix=#{prefix}"
       end
 
-      run "./configure --prefix=#{dirs[:out]} #{dep_args.join ' '}"
-      run "make"
+      run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '}"
+      run "make #{info[:make]}"
       run "make install"
 
       File.write(build_flag, '')
