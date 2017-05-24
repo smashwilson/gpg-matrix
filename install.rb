@@ -52,7 +52,7 @@ DEPENDENCY_PREFIXES = {}
         "--with-#{depname}-prefix=#{prefix}"
       end
 
-      run "sh ./configure --prefix=#{dep_out_dir} #{dep_args.join ' '}"
+      run "sh ./configure --prefix=#{dep_out_dir} #{dep_args.join ' '} --disable-dependency-tracking"
       run 'make'
       run 'make install'
 
@@ -107,6 +107,7 @@ GPG_VERSION_INFO.each do |version, info|
       end
 
       run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '}"
+      run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '} --disable-dependency-tracking"
       run "make #{info[:make]}"
       run "make install"
 
