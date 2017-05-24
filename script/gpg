@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+VERSION=${1}
+shift
+
+BINARY=gpg
+case ${VERSION} in
+  2*) BINARY=gpg2 ;;
+esac
+
+exec .gpg/${VERSION}/out/bin/${BINARY} "${@}"
