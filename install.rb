@@ -106,10 +106,14 @@ GPG_VERSION_INFO.each do |version, info|
         "--with-#{depname}-prefix=#{prefix}"
       end
 
-      run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '}"
+      original_cflags = ENV['CFLAGS']
+      ENV['CFLAGS'] = info[:cflags] if info[:cflags]
+
       run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '} --disable-dependency-tracking"
       run "make #{info[:make]}"
       run "make install"
+
+      ENV['CFLAGS'] = original_cflags
 
       File.write(build_flag, '')
     end
