@@ -7,6 +7,7 @@ GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
   src_dir = File.join(root_dir, 'src')
   out_dir = File.join(root_dir, 'out')
   bin_dir = File.join(out_dir, 'bin')
+  gpg_bin = File.join(bin_dir, 'gpg')
 
   patch_dir = File.join(__dir__, 'patches', version)
 
@@ -17,11 +18,27 @@ GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
     patch: patch_dir,
     configure: '',
     cflags: '',
-    make: ''
+    make: '',
+    gpg_bin: gpg_bin,
   }]
 end]
 
-GPG_VERSION_INFO['1.2.0'][:configure] = '--disable-asm'
-GPG_VERSION_INFO['1.2.0'][:cflags] = "-include #{__dir__}/patches/1.2.0/defs.h"
+def for_versions *versions
+  versions.each do |version|
+    info = GPG_VERSION_INFO[version]
+    yield info if info
+  end
+end
 
-GPG_VERSION_INFO['2.0.29'][:make] = '-e ABSOLUTE_STDINT_H=\'"/usr/include/stdint.h"\''
+for_versions '1.2.0' do |i|
+  i[:configure] = '--disable-asm'
+  i[:cflags] = "-include #{__dir__}/patches/1.2.0/defs.h"
+end
+
+for_versions '2.0.29' do |i|
+  i[:make] = '-e ABSOLUTE_STDINT_H=\'"/usr/include/stdint.h"\''
+end
+
+for_versions '2.0.29', '2.1.21' do |i|
+  i[:gpg_bin] = File.join i[:bin], 'gpg2'
+end
