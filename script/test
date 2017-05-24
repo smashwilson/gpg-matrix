@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Test against all GPG versions.
+
+exec bundle exec ruby test.rb
