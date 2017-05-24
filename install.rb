@@ -6,11 +6,7 @@ require 'nokogiri'
 require 'uri'
 
 require './versions'
-
-def run command
-  system command
-  raise RuntimeError.new("failed: #{command}") unless $?.success?
-end
+require './helpers'
 
 # Download and build dependencies
 dep_dir = File.join(__dir__, '.gpg', 'deps')
