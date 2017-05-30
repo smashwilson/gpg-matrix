@@ -20,6 +20,7 @@ end
 
 def verify_git_setup info
   with_tmpdirs do |repo_dir|
+    puts ".. repo directory: #{repo_dir.bold}".yellow
     puts '.. generating key'.yellow
     run "#{info[:gpg_bin]} --gen-key --batch < #{__dir__}/key-parameters"
 
