@@ -52,14 +52,13 @@ def verify_git_setup info
       begin
         PTY.spawn('export GPG_TTY=$(tty) ; git commit -m blorp') do |r, w, pid|
           begin
-            r.expect /Enter passphrase:/
-            puts "enter passphrase received"
+            puts r.expect(/Enter passphrase:/)[0]
             w.print "trustno1\r\n"
             w.flush
-            puts "passphrase printed"
-            Process.wait(pid)
-            puts "process complete"
-            raise RuntimeError.new('commit failed') unless $?.success?
+            puts r.gets(nil)
+
+            status = PTY.check(pid)
+            raise RuntimeError.new('commit failed') unless status.success?
           rescue Errno::EIO
           end
         end
