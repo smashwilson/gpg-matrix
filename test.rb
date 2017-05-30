@@ -50,7 +50,7 @@ def verify_git_setup info
 
       puts '.. ensuring that a git commit succeeds'.yellow
       begin
-        PTY.spawn('export GPG_TTY=$(tty) ; echo ${GPG_TTY} ; git commit -m blorp') do |r, w, pid|
+        PTY.spawn('export GPG_TTY=$(tty) ; git commit -m blorp') do |r, w, pid|
           begin
             r.expect /Enter passphrase:/
             puts "enter passphrase received"
