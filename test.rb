@@ -29,16 +29,15 @@ def verify_git_setup info
     run "#{info[:gpg_bin]} --gen-key --batch < #{__dir__}/key-parameters"
 
     puts '.. listing GPG key'.yellow
-    list_out = `#{info[:gpg_bin]} --list-keys`
+    list_out = `#{info[:gpg_bin]} --list-keys --with-colons`
     puts list_out
     unless $?.success?
       raise RuntimeError.new('Unable to list GPG keys')
     end
 
     puts '.. extracting key ID'.yellow
-    signing_key = list_out[/pub\s+[^\/]+\/([0-9A-F]+)/, 1]
+    signing_key = list_out[/^pub:.*/].split(':')[4]
     unless signing_key
-      puts list_out
       raise RuntimeError.new('Unable to parse key ID')
     end
 
