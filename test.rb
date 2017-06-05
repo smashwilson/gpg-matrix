@@ -79,6 +79,7 @@ end
 ENV['GIT_TRACE'] = '1'
 
 results = {}
+all_ok = true
 GPG_VERSION_INFO.each do |version, info|
   puts
   puts ">> #{version} <<".ljust(120, '<').black.on_light_cyan.bold
@@ -93,6 +94,7 @@ GPG_VERSION_INFO.each do |version, info|
     puts e.message.light_red
     puts e.backtrace.join("\n ").light_red
     result[:git] = 'FAIL'.light_red.bold
+    all_ok = false
   end
 
   results[version] = result
@@ -103,3 +105,5 @@ puts ">> results <<".black.on_light_cyan.bold
 GPG_VERSION_INFO.each do |version, info|
   puts "#{version.rjust 10}: git #{results[version][:git]}"
 end
+
+exit 1 unless all_ok
