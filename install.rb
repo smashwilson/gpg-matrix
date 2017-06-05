@@ -16,7 +16,7 @@ download_page = Nokogiri::HTML(RestClient.get(base_uri))
 
 DEPENDENCY_PREFIXES = {}
 
-%w(libgpg-error libgcrypt libassuan ksba npth).each do |depname|
+%w(libgpg-error libgcrypt libassuan ksba npth pinentry).each do |depname|
   dep_src_dir = File.join(dep_dir, depname, 'src')
   dep_out_dir = File.join(dep_dir, depname, 'out')
   dep_out_flag = File.join(dep_out_dir, '.success')
