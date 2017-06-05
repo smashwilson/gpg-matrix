@@ -1,6 +1,6 @@
 #!/bin/env ruby
 
-GPG_VERSIONS = %w(1.2.0 1.4.21 2.0.29 2.1.21)
+GPG_VERSIONS = %w(1.4.21 2.0.30 2.1.21)
 
 GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
   root_dir = File.join(__dir__, '.gpg', version)
@@ -30,15 +30,10 @@ def for_versions *versions
   end
 end
 
-for_versions '1.2.0' do |i|
-  i[:configure] = '--disable-asm'
-  i[:cflags] = "-include #{__dir__}/patches/1.2.0/defs.h"
-end
-
-for_versions '2.0.29' do |i|
+for_versions '2.0.30' do |i|
   i[:make] = '-e ABSOLUTE_STDINT_H=\'"/usr/include/stdint.h"\''
 end
 
-for_versions '2.0.29', '2.1.21' do |i|
+for_versions '2.0.30', '2.1.21' do |i|
   i[:gpg_bin] = File.join i[:bin], 'gpg2'
 end
