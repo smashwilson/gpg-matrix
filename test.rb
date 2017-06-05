@@ -50,22 +50,20 @@ def verify_git_setup info
       run "git config user.signingkey #{signing_key}", log: true
       run "git add afile.txt", log: true
 
-      puts '.. ensuring that a git commit succeeds'.yellow
-      begin
-        PTY.spawn('export GPG_TTY=$(tty) ; git commit -m blorp') do |r, w, pid|
-          begin
-            puts r.expect(/Enter passphrase:/)[0]
-            w.print "trustno1\r\n"
-            w.flush
-            puts r.gets(nil)
 
-            status = PTY.check(pid)
-            raise RuntimeError.new('commit failed') unless status.success?
-          rescue Errno::EIO
-          end
+      puts '.. ensuring that a git commit succeeds'.yellow
+      PTY.spawn('export GPG_TTY=$(tty) ; git commit -m blorp') do |r, w, pid|
+        begin
+          puts r.expect(/Enter passphrase:/)
+          puts "[password entered]".bold
+          w.print "trustno1\r\n"
+          w.flush
+          puts r.gets(nil)
+
+          status = PTY.check(pid)
+          raise RuntimeError.new('commit failed') unless status.success?
+        rescue Errno::EIO
         end
-      rescue PTY::ChildExited
-        #
       end
 
       puts '.. ensure that the git commit is signed'.yellow
