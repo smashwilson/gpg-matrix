@@ -4,6 +4,7 @@ require 'fileutils'
 require 'rest-client'
 require 'nokogiri'
 require 'uri'
+require 'colorize'
 
 require './versions'
 require './helpers'
@@ -27,19 +28,19 @@ DEPENDENCY_PREFIXES = {}
     if dep_url.nil?
       raise RuntimeError.new("Unable to find download for #{depname}")
     end
-    puts "downloading dependency #{depname}"
+    puts ".. downloading dependency #{depname}".yellow
 
     dep_download = RestClient::Request.execute(method: :get, url: dep_url, raw_response: true)
     FileUtils.mkdir_p dep_src_dir
     run "tar xvfj #{dep_download.file.path} -C #{dep_src_dir}"
   else
-    puts "dependency #{depname} is already present"
+    puts ".. dependency #{depname} is already present".green
   end
 
   unless File.file? dep_out_flag
     FileUtils.rm_rf dep_out_dir
     FileUtils.mkdir_p dep_out_dir
-    puts "building dependency #{depname}"
+    puts ".. building dependency #{depname}".yellow
 
     dep_src_subdir = Dir.entries(dep_src_dir).find { |subdir| subdir =~ /^(?:lib)?#{depname}-/ }
 
@@ -54,8 +55,9 @@ DEPENDENCY_PREFIXES = {}
 
       File.write(dep_out_flag, '')
     end
+    puts ".. built dependency #{depname}".green
   else
-    puts "dependency #{depname} is already built"
+    puts ".. dependency #{depname} is already built".green
   end
 
   DEPENDENCY_PREFIXES[depname] = dep_out_dir
@@ -63,7 +65,7 @@ end
 
 GPG_VERSION_INFO.each do |version, info|
   unless File.directory? info[:src]
-    puts "downloading gpg source for version #{version}"
+    puts ".. downloading gpg source for version #{version.bold}".green
     FileUtils.mkdir_p(info[:src])
 
     download = RestClient::Request.execute(
@@ -82,7 +84,7 @@ GPG_VERSION_INFO.each do |version, info|
       end
     end
   else
-    puts "gpg version #{version} already present"
+    puts ".. gpg version #{version} already present".green
   end
 
   src_subdir = Dir.entries(info[:src]).find { |subdir| subdir =~ /gnupg-#{version}/ }
@@ -92,7 +94,7 @@ GPG_VERSION_INFO.each do |version, info|
 
   build_flag = File.join info[:out], '.success'
   unless File.file? build_flag
-    puts "building gpg version #{version}"
+    puts ".. building gpg version #{version}".green
 
     FileUtils.rm_rf info[:out]
     FileUtils.mkdir_p info[:out]
@@ -114,6 +116,6 @@ GPG_VERSION_INFO.each do |version, info|
       File.write(build_flag, '')
     end
   else
-    puts "gpg version #{version} has already been built"
+    puts ".. gpg version #{version} has already been built".green
   end
 end
