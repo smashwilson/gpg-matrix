@@ -1,4 +1,4 @@
-#!/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'fileutils'
 require 'rest-client'
@@ -117,5 +117,14 @@ GPG_VERSION_INFO.each do |version, info|
     end
   else
     puts ".. gpg version #{version} has already been built".green
+  end
+
+  pinentry_dest_path = File.join info[:out], 'bin', 'pinentry'
+  unless File.file? pinentry_dest_path
+    pinentry_src_path = File.join __dir__, 'pinentry.rb'
+    FileUtils.cp pinentry_src_path, pinentry_dest_path
+    puts ".. pinentry binary copied in".green
+  else
+    puts ".. pinentry binary already present".green
   end
 end
