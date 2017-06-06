@@ -13,6 +13,7 @@ require './helpers'
 dep_dir = File.join(__dir__, '.gpg', 'deps')
 base_uri = 'https://gnupg.org/download/index.html'
 download_page = Nokogiri::HTML(RestClient.get(base_uri))
+pinentry_path = File.join __dir__, 'pinentry.rb'
 
 DEPENDENCY_PREFIXES = {}
 
@@ -103,13 +104,14 @@ GPG_VERSION_INFO.each do |version, info|
       dep_args = DEPENDENCY_PREFIXES.map do |depname, prefix|
         "--with-#{depname}-prefix=#{prefix}"
       end
+      dep_args << "--with-pinentry-pgm=#{pinentry_path}"
 
       original_cflags = ENV['CFLAGS']
       ENV['CFLAGS'] = info[:cflags] if info[:cflags]
 
-      run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '} --disable-dependency-tracking"
-      run "make #{info[:make]}"
-      run "make install"
+      run "./configure --prefix=#{info[:out]} #{info[:configure]} #{dep_args.join ' '} --disable-dependency-tracking", log: true
+      run "make #{info[:make]}", log: true
+      run "make install", log: true
 
       ENV['CFLAGS'] = original_cflags
 
@@ -117,14 +119,5 @@ GPG_VERSION_INFO.each do |version, info|
     end
   else
     puts ".. gpg version #{version} has already been built".green
-  end
-
-  pinentry_dest_path = File.join info[:out], 'bin', 'pinentry'
-  unless File.file? pinentry_dest_path
-    pinentry_src_path = File.join __dir__, 'pinentry.rb'
-    FileUtils.cp pinentry_src_path, pinentry_dest_path
-    puts ".. pinentry binary copied in".green
-  else
-    puts ".. pinentry binary already present".green
   end
 end
