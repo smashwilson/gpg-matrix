@@ -2,7 +2,7 @@
 
 pinentry_break = File.exists?(File.join __dir__, '.pinentry.break')
 
-File.write(File.join(ENV['LOG_DIR'], 'pinentry.log'), "Pinentry invoked with break=#{pinentry_break}")
+File.write(File.join(ENV['LOG_DIR'], 'pinentry.log'), "Pinentry invoked with break=#{pinentry_break}\n")
 
 STDOUT.sync = true
 
@@ -14,7 +14,7 @@ while line = $stdin.gets do
       puts "ERR 83918950 Inappropriate ioctl for device <Pinentry>"
       exit 1
     end
-    puts "D trustno1"
+    puts "D with+a+space"
     puts "OK"
   when /^GETINFO flavor/
     puts "D matrix:matrix\nOK"

@@ -1,7 +1,7 @@
 Key-Type: rsa
 Key-Length: 4096
 Key-Usage: sign
-Passphrase: trustno1
+Passphrase: with a space
 Name-Real: GPG Matrix
 Expire-Date: 1d
 %commit

@@ -1,3 +1,3 @@
 #!/usr/bin/env ruby
 
-puts "trustno1"
+puts "with a space"
