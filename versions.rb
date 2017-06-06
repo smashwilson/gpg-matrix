@@ -9,6 +9,7 @@ GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
   bin_dir = File.join(out_dir, 'bin')
   gpg_bin = File.join(bin_dir, 'gpg')
 
+  log_dir = File.join(__dir__, 'logs', version)
   patch_dir = File.join(__dir__, 'patches', version)
 
   [version, {
@@ -16,10 +17,11 @@ GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
     src: src_dir,
     bin: bin_dir,
     patch: patch_dir,
+    log: log_dir,
     configure: '',
     cflags: '',
     make: '',
-    gpg_bin: gpg_bin,
+    gpg_bin: gpg_bin
   }]
 end]
 
