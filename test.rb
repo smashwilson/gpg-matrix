@@ -17,6 +17,7 @@ unless ENV['ATOM_GITHUB_SRC']
 end
 ATOM_GITHUB_ROOT = ENV['ATOM_GITHUB_SRC']
 GPG_HELPER_PATH = File.join ATOM_GITHUB_ROOT, 'bin', 'gpg-no-tty.sh'
+PINENTRY_PATH = File.join ATOM_GITHUB_ROOT, 'bin', 'gpg-pinentry.sh'
 PINENTRY_BREAK_FILE  = File.join __dir__, '.pinentry.break'
 
 def with_tmpdirs
@@ -34,10 +35,11 @@ end
 def prepare info, trial
   # Reset environment variables
   File.delete(PINENTRY_BREAK_FILE) if File.exist?(PINENTRY_BREAK_FILE)
-  ENV['ATOM_GITHUB_PATH'] = ''
+  ENV['ATOM_GITHUB_TMP'] = ''
   ENV['ATOM_GITHUB_ASKPASS_PATH'] = ''
   ENV['ATOM_GITHUB_WORKDIR_PATH'] = ''
   ENV['ATOM_GITHUB_DUGITE_PATH'] = ''
+  ENV['ATOM_GITHUB_PINENTRY_PATH'] = ''
   ENV['DISPLAY'] = ''
   ENV['ATOM_GITHUB_ORIGINAL_PATH'] = ''
   ENV['ATOM_GITHUB_ORIGINAL_GIT_ASKPASS'] = ''
@@ -46,6 +48,7 @@ def prepare info, trial
   ENV['SSH_ASKPASS'] = ''
   ENV['GIT_ASKPASS'] = ''
   ENV['GPG_TTY'] = ''
+  ENV['GPG_AGENT_INFO'] = ''
 
   log_dir = File.join(info[:log], trial)
   FileUtils.rm_rf log_dir
@@ -104,7 +107,7 @@ def verify_git_setup info
       begin
         puts r.expect(/Enter passphrase:/)
         puts "[password entered]".bold
-        w.print "trustno1\r\n"
+        w.print "with a space\r\n"
         w.flush
         puts r.gets(nil)
 
@@ -133,10 +136,11 @@ def verify_atom_atom_pinentry info
 
     File.write(PINENTRY_BREAK_FILE , '')
 
-    ENV['ATOM_GITHUB_PATH'] = atom_dir
+    ENV['ATOM_GITHUB_TMP'] = atom_dir
     ENV['ATOM_GITHUB_ASKPASS_PATH'] = File.join __dir__, 'askpass.rb'
     ENV['ATOM_GITHUB_WORKDIR_PATH'] = repo_dir
     ENV['ATOM_GITHUB_DUGITE_PATH'] = File.join ATOM_GITHUB_ROOT, 'node_modules', 'dugite'
+    ENV['ATOM_GITHUB_PINENTRY_PATH'] = PINENTRY_PATH
     ENV['ATOM_GITHUB_ORIGINAL_PATH'] = ENV['PATH']
     ENV['ATOM_GITHUB_ORIGINAL_GIT_ASKPASS'] = ENV['GIT_ASKPASS']
     ENV['ATOM_GITHUB_ORIGINAL_SSH_ASKPASS'] = ENV['SSH_ASKPASS']
