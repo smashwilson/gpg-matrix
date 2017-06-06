@@ -14,7 +14,7 @@ while line = $stdin.gets do
       puts "ERR 83918950 Inappropriate ioctl for device <Pinentry>"
       exit 1
     end
-    puts "D with+a+space"
+    puts "D with a space"
     puts "OK"
   when /^GETINFO flavor/
     puts "D matrix:matrix\nOK"
