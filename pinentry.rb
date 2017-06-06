@@ -22,6 +22,8 @@ while line = $stdin.gets do
     puts "D 0.0.0\nOK"
   when /^GETINFO pid/
     puts "D #{Process.pid}\nOK"
+  when /^BYE/
+    exit 0
   else
     puts "OK"
   end
