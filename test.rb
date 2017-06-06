@@ -10,7 +10,6 @@ require 'expect'
 require 'erb'
 
 ENV['GIT_TRACE'] = '1'
-ENV['PINENTRY_BREAK'] = 'no'
 unless ENV['ATOM_GITHUB_SRC']
   $stderr.puts "Please set ATOM_GITHUB_SRC to the root directory of your atom/github clone."
   exit 1
