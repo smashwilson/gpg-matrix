@@ -16,7 +16,14 @@ unless ENV['ATOM_GITHUB_SRC']
   exit 1
 end
 ATOM_GITHUB_ROOT = ENV['ATOM_GITHUB_SRC']
-GPG_HELPER_PATH = File.join ATOM_GITHUB_ROOT, 'bin', 'gpg-no-tty.sh'
+
+gpg_wrapper = nil
+['gpg-wrapper.sh', 'gpg-no-tty.sh'].each do |candidate|
+  wrapper_path = File.join ATOM_GITHUB_ROOT, 'bin', 'gpg-wrapper.sh'
+  gpg_wrapper = wrapper_path if File.exist? wrapper_path
+end
+GPG_HELPER_PATH = gpg_wrapper
+
 PINENTRY_PATH = File.join ATOM_GITHUB_ROOT, 'bin', 'gpg-pinentry.sh'
 PINENTRY_BREAK_FILE  = File.join __dir__, '.pinentry.break'
 
