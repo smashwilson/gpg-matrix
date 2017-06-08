@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Execute a binary from a specific GPG version with an isolated GNUPGHOME.
+
+set -euo pipefail
+
+VERSION=${1}
+shift
+
+if [ ! -d ".gpg/${VERSION}" ]; then
+  printf "Unrecognized version: %s\n" "${VERSION}" >&2
+  printf "Known versions:\n" >&2
+  find .gpg -maxdepth 1 -mindepth 1 -type d -exec basename '{}' \; | grep -v deps >&2
+  exit 1
+fi
+
+BINARY=${1}
+shift
+
+export GNUPGHOME=".gpg/${VERSION}/home"
+if [ ! -d "${GNUPGHOME}" ]; then
+  printf "Creating GPG home for version %s.\n" "${VERSION}"
+  mkdir -p "${GNUPGHOME}"
+fi
+
+exec .gpg/${VERSION}/out/bin/${BINARY} "${@:-}"
