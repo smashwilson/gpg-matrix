@@ -1,6 +1,6 @@
 #!/bin/env ruby
 
-GPG_VERSIONS = %w(1.4.21 2.0.30 2.1.21)
+GPG_VERSIONS = %w(1.4.21 2.0.30 2.1.21 2.2.0)
 
 GPG_VERSION_INFO = Hash[GPG_VERSIONS.map do |version|
   root_dir = File.join(__dir__, '.gpg', version)
