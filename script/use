@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Configure the current terminal to use a specified version of GPG and an isolated key
+
+exec bundle exec ruby use.rb "${@}"
